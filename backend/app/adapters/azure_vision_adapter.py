@@ -107,21 +107,28 @@ class AzureVisionAdapter(BaseInferenceAdapter):
                 return f"{endpoint}{delimiter}api-version={self._api_version}"
             return endpoint
 
-        # Case 2: Azure OpenAI style endpoint (e.g., https://<resource>.openai.azure.com/)
-        if ".openai.azure.com" in endpoint:
+        # Case 2: Pre-routed deployment path (e.g., .../openai/deployments/{deployment})
+        if "/openai/deployments/" in endpoint:
+            endpoint = f"{endpoint}/chat/completions"
+            if "api-version" not in endpoint and self._api_version:
+                return f"{endpoint}?api-version={self._api_version}"
+            return endpoint
+
+        # Case 3: Azure OpenAI / Cognitive Services style endpoint (e.g., https://<resource>.openai.azure.com/ or .cognitiveservices.azure.com/)
+        if ".openai.azure.com" in endpoint or ".cognitiveservices.azure.com" in endpoint:
             return (
                 f"{endpoint}/openai/deployments/{self._deployment_name}"
                 f"/chat/completions?api-version={self._api_version}"
             )
 
-        # Case 3: Azure AI Foundry Model Inference / MaaS / Serverless
+        # Case 4: Azure AI Foundry Model Inference / MaaS / Serverless
         # (e.g., https://<resource>.services.ai.azure.com/models or direct models endpoint)
         if "services.ai.azure.com" in endpoint or "models.ai.azure.com" in endpoint:
             if endpoint.endswith("/models"):
                 return f"{endpoint}/chat/completions"
             return f"{endpoint}/chat/completions"
 
-        # Case 4: Generic base URL
+        # Case 5: Generic base URL
         return f"{endpoint}/chat/completions"
 
     def build_headers(self) -> Dict[str, str]:

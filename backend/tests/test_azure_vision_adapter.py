@@ -84,6 +84,33 @@ def test_azure_request_construction_serverless_endpoint():
     assert url == "https://test-resource.services.ai.azure.com/models/chat/completions"
 
 
+def test_azure_request_construction_cognitiveservices_endpoint():
+    """Test 1c: Correct construction of Cognitive Services multi-service endpoint."""
+    adapter = AzureVisionAdapter(
+        endpoint="https://test-cs.cognitiveservices.azure.com/",
+        api_key="mock-key",
+        deployment_name="custom-vision-deploy",
+        api_version="2024-10-21",
+    )
+    url = adapter.build_url()
+    assert url == (
+        "https://test-cs.cognitiveservices.azure.com/openai/deployments/custom-vision-deploy"
+        "/chat/completions?api-version=2024-10-21"
+    )
+
+
+def test_azure_request_construction_prerouted_endpoint():
+    """Test 1d: Correct construction when endpoint already includes deployment path."""
+    adapter = AzureVisionAdapter(
+        endpoint="https://test.openai.azure.com/openai/deployments/my-gpt4o",
+        api_key="mock-key",
+        deployment_name="my-gpt4o",
+        api_version="2024-08-01-preview",
+    )
+    url = adapter.build_url()
+    assert url == "https://test.openai.azure.com/openai/deployments/my-gpt4o/chat/completions?api-version=2024-08-01-preview"
+
+
 def test_image_encoding_and_transmission(sample_azure_adapter, sample_image):
     """Test 2: Correct image encoding as base64 data URI and dimension handling."""
     data_uri = sample_azure_adapter.encode_image(sample_image)
