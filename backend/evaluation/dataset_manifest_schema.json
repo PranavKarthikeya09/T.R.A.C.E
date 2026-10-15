@@ -1,0 +1,185 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TRACE_DatasetManifestSchema",
+  "description": "JSON Schema specification for T.R.A.C.E. Phase 15 leakage-aware evaluation and training manifests.",
+  "type": "object",
+  "required": [
+    "manifest_version",
+    "dataset_name",
+    "created_at",
+    "summary",
+    "samples"
+  ],
+  "properties": {
+    "manifest_version": {
+      "type": "string",
+      "enum": ["2.0.0"]
+    },
+    "dataset_name": {
+      "type": "string",
+      "description": "Identifier of the dataset release (e.g. TRACE-Multigen-400-v1)"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "total_samples",
+        "authentic_count",
+        "synthetic_count",
+        "splits",
+        "generator_families",
+        "held_out_families"
+      ],
+      "properties": {
+        "total_samples": { "type": "integer", "minimum": 1 },
+        "authentic_count": { "type": "integer", "minimum": 1 },
+        "synthetic_count": { "type": "integer", "minimum": 1 },
+        "splits": {
+          "type": "object",
+          "required": ["train", "val", "test"],
+          "properties": {
+            "train": { "type": "integer" },
+            "val": { "type": "integer" },
+            "test": { "type": "integer" }
+          }
+        },
+        "generator_families": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "held_out_families": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "samples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "image_path",
+          "ground_truth",
+          "label_rationale",
+          "source_category",
+          "generator_family",
+          "model_name",
+          "source_dataset",
+          "original_identifier",
+          "source_url",
+          "license",
+          "sha256",
+          "dimensions",
+          "file_format",
+          "color_channels",
+          "compression_notes",
+          "semantic_category",
+          "generation_prompt",
+          "split",
+          "is_held_out"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique, deterministic sample identifier (e.g. auth_coco_000000000139)"
+          },
+          "image_path": {
+            "type": "string",
+            "description": "Relative path to local image file from workspace root"
+          },
+          "ground_truth": {
+            "type": "integer",
+            "enum": [0, 1],
+            "description": "0 = Authentic (real camera capture), 1 = Synthetic (AI-generated image)"
+          },
+          "label_rationale": {
+            "type": "string",
+            "description": "Explicit evidence justifying ground-truth classification"
+          },
+          "source_category": {
+            "type": "string",
+            "enum": ["authentic_camera_capture", "synthetic_generative_ai"]
+          },
+          "generator_family": {
+            "type": "string",
+            "enum": [
+              "none",
+              "gan",
+              "latent_diffusion",
+              "high_res_diffusion",
+              "cascaded_prior_diffusion",
+              "diffusion_transformer_flow"
+            ]
+          },
+          "model_name": {
+            "type": "string",
+            "description": "Exact architecture or capture device (e.g. Stable Diffusion v1.5, Nikon D90)"
+          },
+          "source_dataset": {
+            "type": "string",
+            "description": "Name of upstream benchmark or official repository"
+          },
+          "original_identifier": {
+            "type": "string",
+            "description": "Filename or ID in the original upstream dataset"
+          },
+          "source_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Direct, verifiable upstream URL"
+          },
+          "license": {
+            "type": "string",
+            "description": "Applicable legal license and usage terms"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "Hexadecimal SHA-256 hash of the exact file bytes"
+          },
+          "dimensions": {
+            "type": "object",
+            "required": ["width", "height", "aspect_ratio"],
+            "properties": {
+              "width": { "type": "integer", "minimum": 1 },
+              "height": { "type": "integer", "minimum": 1 },
+              "aspect_ratio": { "type": "string" }
+            }
+          },
+          "file_format": {
+            "type": "string",
+            "enum": ["jpeg", "png", "webp", "tiff"]
+          },
+          "color_channels": {
+            "type": "string",
+            "enum": ["RGB", "RGBA", "L"]
+          },
+          "compression_notes": {
+            "type": "string",
+            "description": "Compression and quality attributes (e.g. uncompressed_png, jpeg_q90)"
+          },
+          "semantic_category": {
+            "type": "string",
+            "description": "High-level content category (e.g. interior, portrait, wildlife, architecture)"
+          },
+          "generation_prompt": {
+            "type": ["string", "null"],
+            "description": "Text prompt used for generation if available, else null"
+          },
+          "split": {
+            "type": "string",
+            "enum": ["train", "val", "test"]
+          },
+          "is_held_out": {
+            "type": "boolean",
+            "description": "True if generator family is strictly excluded from training"
+          }
+        }
+      }
+    }
+  }
+}

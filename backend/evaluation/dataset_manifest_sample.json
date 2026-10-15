@@ -1,0 +1,172 @@
+{
+  "description": "T.R.A.C.E. Phase 8 — Evaluation Dataset Manifest (20-image calibration set)",
+  "dataset_metadata": {
+    "version": "1.0.0",
+    "total_samples": 20,
+    "authentic_count": 10,
+    "synthetic_count": 10,
+    "domains": ["natural_photography", "latent_diffusion", "gan", "autoregressive"]
+  },
+  "samples": [
+    {
+      "id": "auth_01",
+      "image_path": "data/authentic/imagenet_n01440764_tench.jpg",
+      "ground_truth": 0,
+      "source_dataset": "ImageNet-1K (ILSVRC2012)",
+      "generator_type": "none (real camera capture)",
+      "notes": "Natural camera photo, unmanipulated, standard JPEG compression"
+    },
+    {
+      "id": "auth_02",
+      "image_path": "data/authentic/coco_000000000139.jpg",
+      "ground_truth": 0,
+      "source_dataset": "MS-COCO 2017 Validation",
+      "generator_type": "none (real camera capture)",
+      "notes": "Living room scene, ambient interior lighting"
+    },
+    {
+      "id": "auth_03",
+      "image_path": "data/authentic/coco_000000000285.jpg",
+      "ground_truth": 0,
+      "source_dataset": "MS-COCO 2017 Validation",
+      "generator_type": "none (real camera capture)",
+      "notes": "Outdoor landscape, natural sunlight"
+    },
+    {
+      "id": "auth_04",
+      "image_path": "data/authentic/raise_r0001.jpg",
+      "ground_truth": 0,
+      "source_dataset": "RAISE Forensic Database",
+      "generator_type": "none (uncompressed RAW camera export)",
+      "notes": "Pristine sensor noise, Nikon D90"
+    },
+    {
+      "id": "auth_05",
+      "image_path": "data/authentic/raise_r0002.jpg",
+      "ground_truth": 0,
+      "source_dataset": "RAISE Forensic Database",
+      "generator_type": "none (uncompressed RAW camera export)",
+      "notes": "Pristine architectural texture, Nikon D7000"
+    },
+    {
+      "id": "auth_06",
+      "image_path": "data/authentic/ffhq_00001.png",
+      "ground_truth": 0,
+      "source_dataset": "Flickr-Faces-HQ (FFHQ)",
+      "generator_type": "none (real human portrait)",
+      "notes": "High resolution natural portrait"
+    },
+    {
+      "id": "auth_07",
+      "image_path": "data/authentic/ffhq_00002.png",
+      "ground_truth": 0,
+      "source_dataset": "Flickr-Faces-HQ (FFHQ)",
+      "generator_type": "none (real human portrait)",
+      "notes": "Outdoor portrait with complex hair and background"
+    },
+    {
+      "id": "auth_08",
+      "image_path": "data/authentic/lsun_bedroom_001.jpg",
+      "ground_truth": 0,
+      "source_dataset": "LSUN Bedroom Validation",
+      "generator_type": "none (real camera interior)",
+      "notes": "Standard real indoor scene from LSUN benchmark"
+    },
+    {
+      "id": "auth_09",
+      "image_path": "data/authentic/lsun_church_001.jpg",
+      "ground_truth": 0,
+      "source_dataset": "LSUN Church Outdoor Validation",
+      "generator_type": "none (real camera exterior)",
+      "notes": "Complex geometric lines and sky boundary"
+    },
+    {
+      "id": "auth_10",
+      "image_path": "data/authentic/dresden_canon_01.jpg",
+      "ground_truth": 0,
+      "source_dataset": "Dresden Image Database",
+      "generator_type": "none (controlled camera capture)",
+      "notes": "Canon Ixus, verified camera origin"
+    },
+    {
+      "id": "synth_01",
+      "image_path": "data/synthetic/genimage_sd14_001.png",
+      "ground_truth": 1,
+      "source_dataset": "GenImage (ECCV 2024)",
+      "generator_type": "Stable Diffusion v1.4",
+      "notes": "Latent diffusion model, text-to-image 512x512"
+    },
+    {
+      "id": "synth_02",
+      "image_path": "data/synthetic/genimage_sd15_001.png",
+      "ground_truth": 1,
+      "source_dataset": "GenImage (ECCV 2024)",
+      "generator_type": "Stable Diffusion v1.5",
+      "notes": "Photorealistic animal portrait prompt"
+    },
+    {
+      "id": "synth_03",
+      "image_path": "data/synthetic/genimage_midjourney_001.png",
+      "ground_truth": 1,
+      "source_dataset": "GenImage (ECCV 2024)",
+      "generator_type": "Midjourney v5",
+      "notes": "Cinematic portrait with stylized specular lighting"
+    },
+    {
+      "id": "synth_04",
+      "image_path": "data/synthetic/genimage_midjourney_002.png",
+      "ground_truth": 1,
+      "source_dataset": "GenImage (ECCV 2024)",
+      "generator_type": "Midjourney v5",
+      "notes": "Urban architectural rendering with reflective surfaces"
+    },
+    {
+      "id": "synth_05",
+      "image_path": "data/synthetic/genimage_adm_001.png",
+      "ground_truth": 1,
+      "source_dataset": "GenImage (ECCV 2024)",
+      "generator_type": "Ablated Diffusion Model (ADM)",
+      "notes": "Pixel-space guided diffusion"
+    },
+    {
+      "id": "synth_06",
+      "image_path": "data/synthetic/genimage_glide_001.png",
+      "ground_truth": 1,
+      "source_dataset": "GenImage (ECCV 2024)",
+      "generator_type": "GLIDE (OpenAI)",
+      "notes": "Diffusion model with classifier-free guidance"
+    },
+    {
+      "id": "synth_07",
+      "image_path": "data/synthetic/genimage_vqdm_001.png",
+      "ground_truth": 1,
+      "source_dataset": "GenImage (ECCV 2024)",
+      "generator_type": "VQ-Diffusion (VQDM)",
+      "notes": "Discrete latent diffusion with vector quantization"
+    },
+    {
+      "id": "synth_08",
+      "image_path": "data/synthetic/genimage_biggan_001.png",
+      "ground_truth": 1,
+      "source_dataset": "GenImage (ECCV 2024)",
+      "generator_type": "BigGAN",
+      "notes": "Deep convolutional generative adversarial network"
+    },
+    {
+      "id": "synth_09",
+      "image_path": "data/synthetic/genimage_wukong_001.png",
+      "ground_truth": 1,
+      "source_dataset": "GenImage (ECCV 2024)",
+      "generator_type": "Wukong Diffusion",
+      "notes": "Cross-lingual latent diffusion model"
+    },
+    {
+      "id": "synth_10",
+      "image_path": "data/synthetic/progan_bedroom_001.png",
+      "ground_truth": 1,
+      "source_dataset": "Wang et al. (CVPR 2020) / ForenSynths",
+      "generator_type": "ProGAN (Progressive GAN)",
+      "notes": "Direct baseline training generator for UnivFD"
+    }
+  ]
+}

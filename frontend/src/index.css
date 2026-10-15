@@ -1,111 +1,161 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /* ==========================================================================
+     T.R.A.C.E. Design Tokens — Phase 19: Distinctive Color Identity
+     Approved Palette: Warm Ivory, Paper White, Deep Burgundy, Muted Brass,
+     Ink Black, Warm Grey, Warm Neutral Borders, and Soft Parchment.
+     ========================================================================== */
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  /* Canvas and Primary Surfaces */
+  --bg-canvas: #f5f1e8;         /* Warm Ivory page background */
+  --bg-surface: #fffcf6;        /* Paper White main content surfaces */
+  --bg-inset: #eee8de;          /* Soft Parchment inset areas */
+  --bg-subtle: #eee8de;         /* Soft Parchment secondary panels */
+  --bg-surface-hover: #f9f5ed;  /* Interactive hover surface */
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* Borders (Warm Neutral) */
+  --border-subtle: #ded7cc;     /* Thin warm neutral border */
+  --border-medium: #cfc6b8;     /* Mid-tone warm border */
+  --border-strong: #9e9587;     /* High-contrast border */
+  --border-focus: #762d3d;      /* Deep burgundy keyboard focus outline */
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  /* Typography Colors */
+  --text-primary: #242326;      /* Ink Black primary text (14.2:1 contrast) */
+  --text-secondary: #706b67;    /* Warm Grey secondary text (4.95:1 contrast) */
+  --text-muted: #88827c;        /* Refined caption text */
+  --text-inverse: #ffffff;      /* High-contrast white for dark surfaces */
+
+  /* Primary Brand Accent — Deep Burgundy */
+  --burgundy: #762d3d;          /* Primary brand accent */
+  --burgundy-dark: #5c232f;     /* Burgundy active / hover state */
+  --burgundy-tint: #f8edf0;     /* Delicate burgundy background wash */
+  --burgundy-border: #e8cdd4;   /* Delicate burgundy perimeter border */
+
+  /* Secondary Accent — Muted Brass */
+  --brass: #b18a52;             /* Muted Brass decorative accent */
+  --brass-dark: #7d5b28;        /* Accessible darkened brass for text (6.2:1 contrast) */
+  --brass-tint: #f9f4ea;        /* Subtle brass background wash */
+  --brass-border: #e2d2bb;      /* Subtle brass perimeter border */
+
+  /* Semantic Status Colors (Separate from brand burgundy) */
+  /* 1. Caution (Muted Amber) */
+  --caution-bg: #fef8eb;
+  --caution-border: #d97706;
+  --caution-text: #854d0e;
+  --caution-tag-bg: #fef0c7;
+
+  /* 2. Notice / Authentic (Restrained Green) */
+  --notice-bg: #f2f9f3;
+  --notice-border: #16a34a;
+  --notice-text: #166534;
+  --notice-tag-bg: #dcfce7;
+
+  /* 3. Inconclusive (Neutral Slate / Muted Stone) */
+  --inconclusive-bg: #eee8de;
+  --inconclusive-border: #b5aca0;
+  --inconclusive-text: #3e3b38;
+  --inconclusive-tag-bg: #e2dbce;
+
+  /* 4. Error / Hazard (Deep Crimson) */
+  --error-bg: #fdf3f3;
+  --error-border: #dc2626;
+  --error-text: #991b1b;
+  --error-tag-bg: #fee2e2;
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Radii (Crisp, Disciplined) */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Restrained Soft Shadows */
+  --shadow-xs: 0 1px 2px rgba(36, 35, 38, 0.04);
+  --shadow-sm: 0 1px 3px rgba(36, 35, 38, 0.06), 0 1px 2px rgba(36, 35, 38, 0.03);
+  --shadow-md: 0 4px 6px -1px rgba(36, 35, 38, 0.06), 0 2px 4px -2px rgba(36, 35, 38, 0.03);
+
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
+  padding: 0;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: -0.015em;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
 p {
   margin: 0;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+a {
+  color: var(--burgundy);
+  text-decoration: none;
+  transition: color 0.12s ease;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+a:hover {
+  color: var(--burgundy-dark);
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Accessibility: Visible Focus Outlines */
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Accessibility: Respect Reduced Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

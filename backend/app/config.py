@@ -1,5 +1,7 @@
 """Application configuration settings."""
-from typing import List, Optional
+from pathlib import Path
+from typing import List, Optional, Any, Union
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -12,7 +14,7 @@ class Settings(BaseSettings):
     HOST: str = "127.0.0.1"
     PORT: int = 8000
 
-    CORS_ORIGINS: List[str] = [
+    CORS_ORIGINS: Union[List[str], str] = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:3000"
@@ -20,8 +22,22 @@ class Settings(BaseSettings):
 
     # Media and upload limits
     MAX_UPLOAD_SIZE_BYTES: int = 10 * 1024 * 1024  # 10 MB
-    ALLOWED_IMAGE_EXTENSIONS: List[str] = [".jpg", ".jpeg", ".png", ".webp"]
+    ALLOWED_IMAGE_EXTENSIONS: Union[List[str], str] = [".jpg", ".jpeg", ".png", ".webp"]
     TEMP_UPLOAD_DIR: str = "temp_uploads"
+
+    @field_validator("CORS_ORIGINS", "ALLOWED_IMAGE_EXTENSIONS")
+    @classmethod
+    def normalize_list(cls, v: Any) -> List[str]:
+        if isinstance(v, str):
+            v_str = v.strip()
+            if v_str.startswith("[") and v_str.endswith("]"):
+                import json
+                try:
+                    return json.loads(v_str)
+                except Exception:
+                    pass
+            return [item.strip() for item in v_str.split(",") if item.strip()]
+        return v
 
     # AI Model & Azure AI Foundry Settings
     MODEL_ID: str = "azure-vision-detector"
@@ -39,7 +55,7 @@ class Settings(BaseSettings):
     OFFICIAL_REPORTING_URL: str = "https://cybercrime.gov.in/"
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(".env", "backend/.env", str(Path(__file__).resolve().parent.parent / ".env")),
         env_file_encoding="utf-8",
         extra="ignore"
     )

@@ -22,6 +22,7 @@ class ResultComposer:
         Never declares certainty.
         """
         ai_status = ai_result.get("status")
+        prov_status = (provenance_result.get("status") or "").lower()
 
         if ai_status != "completed":
             return TraceAlert(
@@ -29,9 +30,17 @@ class ResultComposer:
                 message="Automated detection could not be completed. Independent verification recommended."
             )
 
+        # Check for cryptographic tampering or failure in provenance credentials
+        if prov_status in ("invalid", "tampered"):
+            return TraceAlert(
+                level="caution",
+                message="Caution: Provenance credentials failed verification or indicate tampering. Media integrity cannot be trusted."
+            )
+
         label = (ai_result.get("label") or "").lower()
 
-        if "manipulated" in label or "fake" in label or "deepfake" in label:
+        # Handle 'potential_manipulation', 'manipulated', 'synthetic', 'fake', 'deepfake'
+        if "manipulat" in label or "fake" in label or "synthetic" in label or "deepfake" in label:
             return TraceAlert(
                 level="caution",
                 message="Caution: Potential media manipulation detected by automated analysis. Verify original source before trusting or sharing."

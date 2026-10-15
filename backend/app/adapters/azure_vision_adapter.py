@@ -69,11 +69,11 @@ class AzureVisionAdapter(BaseInferenceAdapter):
         timeout_seconds: Optional[float] = None,
         max_retries: Optional[int] = None,
     ):
-        self._endpoint = (endpoint or settings.AZURE_AI_ENDPOINT or "").strip()
-        self._api_key = (api_key or settings.AZURE_AI_API_KEY or "").strip()
-        self._deployment_name = (deployment_name or settings.AZURE_AI_DEPLOYMENT_NAME or "").strip()
-        self._api_version = (api_version or settings.AZURE_AI_API_VERSION or "2024-08-01-preview").strip()
-        self._timeout_seconds = timeout_seconds or settings.AZURE_AI_REQUEST_TIMEOUT_SECONDS
+        self._endpoint = endpoint.strip() if endpoint is not None else (settings.AZURE_AI_ENDPOINT or "").strip()
+        self._api_key = api_key.strip() if api_key is not None else (settings.AZURE_AI_API_KEY or "").strip()
+        self._deployment_name = deployment_name.strip() if deployment_name is not None else (settings.AZURE_AI_DEPLOYMENT_NAME or "").strip()
+        self._api_version = api_version.strip() if api_version is not None else (settings.AZURE_AI_API_VERSION or "2024-08-01-preview").strip()
+        self._timeout_seconds = timeout_seconds if timeout_seconds is not None else settings.AZURE_AI_REQUEST_TIMEOUT_SECONDS
         self._max_retries = max_retries if max_retries is not None else settings.AZURE_AI_MAX_RETRIES
 
     @property

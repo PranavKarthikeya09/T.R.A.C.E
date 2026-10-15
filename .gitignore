@@ -31,6 +31,8 @@ venv/
 ENV/
 env/
 backend/.venv/
+backend/.venv-eval/
+.*venv*/
 
 # Environment variables and secrets
 .env
@@ -43,6 +45,7 @@ backend/.venv/
 .idea/
 *.swp
 *.swo
+.gemini/
 
 # Testing / coverage
 .pytest_cache/
@@ -57,6 +60,13 @@ yarn-debug.log*
 yarn-error.log*
 frontend/dist/
 frontend/build/
+.vercel/
+
+# Evaluation Datasets, Checkpoints & Artifacts
+backend/evaluation/weights/
+backend/evaluation/data/
+backend/evaluation/pilot_data/
+backend/evaluation/cache/
 
 # Temporary media & upload files
 temp_uploads/

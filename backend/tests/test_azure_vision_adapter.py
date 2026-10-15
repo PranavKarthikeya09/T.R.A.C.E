@@ -163,7 +163,7 @@ def test_successful_parsing_and_schema_mapping(sample_azure_adapter):
 
 def test_missing_configuration():
     """Test 5: Unconfigured adapter raises ModelUnavailableException."""
-    unconfigured_adapter = AzureVisionAdapter(endpoint=None, api_key=None, deployment_name=None)
+    unconfigured_adapter = AzureVisionAdapter(endpoint="", api_key="", deployment_name="")
     assert not unconfigured_adapter.is_configured
 
     sample_img = Image.new("RGB", (10, 10))
