@@ -26,3 +26,13 @@ class BaseInferenceAdapter(ABC):
         Must raise appropriate exceptions on inference failure.
         """
         pass
+
+    async def predict_async(self, image: Image.Image) -> Dict[str, Any]:
+        """
+        Execute model inference asynchronously.
+        Defaults to running synchronous predict() in a worker thread to avoid
+        blocking the event loop, or can be overridden by native async clients.
+        """
+        import asyncio
+        return await asyncio.to_thread(self.predict, image)
+

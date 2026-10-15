@@ -1,5 +1,5 @@
 """Application configuration settings."""
-from typing import List
+from typing import List, Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -23,9 +23,16 @@ class Settings(BaseSettings):
     ALLOWED_IMAGE_EXTENSIONS: List[str] = [".jpg", ".jpeg", ".png", ".webp"]
     TEMP_UPLOAD_DIR: str = "temp_uploads"
 
-    # AI Model Settings
-    MODEL_ID: str = "candidate-detector-v1"
-    MODEL_DEVICE: str = "cpu"
+    # AI Model & Azure AI Foundry Settings
+    MODEL_ID: str = "azure-vision-detector"
+    MODEL_DEVICE: str = "cloud"
+    
+    AZURE_AI_ENDPOINT: Optional[str] = None
+    AZURE_AI_API_KEY: Optional[str] = None
+    AZURE_AI_DEPLOYMENT_NAME: Optional[str] = None
+    AZURE_AI_API_VERSION: str = "2024-08-01-preview"
+    AZURE_AI_REQUEST_TIMEOUT_SECONDS: float = 30.0
+    AZURE_AI_MAX_RETRIES: int = 1
 
     # Feature Toggles
     ENABLE_PROVENANCE_CHECK: bool = False

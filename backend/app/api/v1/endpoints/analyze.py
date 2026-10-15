@@ -4,6 +4,13 @@ from fastapi.responses import JSONResponse
 from app.schemas.analysis import AnalysisResponse
 from app.schemas.error import ErrorResponse, ErrorDetail
 from app.utils.media import validate_image_upload
+from app.adapters.exceptions import (
+    ModelUnavailableException,
+    ModelAuthenticationException,
+    ModelRateLimitException,
+    ModelNetworkException,
+    ModelInferenceException,
+)
 from app.services.analysis_service import AnalysisService
 
 router = APIRouter()
@@ -80,14 +87,53 @@ async def analyze_image(
             )
 
     try:
-        result = analysis_service.analyze_image(
+        result = await analysis_service.analyze_image_async(
             filename=file.filename,
             image=pil_image,
             include_provenance=include_provenance
         )
         return result
-    except RuntimeError as re:
-        # Surfacing model unavailability rather than fabricating a result
+    except ModelUnavailableException:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content=ErrorResponse(
+                error=ErrorDetail(
+                    code="MODEL_UNAVAILABLE",
+                    message="Detection model is currently unavailable or not yet configured for inference."
+                )
+            ).model_dump()
+        )
+    except ModelRateLimitException:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content=ErrorResponse(
+                error=ErrorDetail(
+                    code="MODEL_UNAVAILABLE",
+                    message="Inference service is currently rate-limited. Please retry shortly."
+                )
+            ).model_dump()
+        )
+    except (ModelAuthenticationException, ModelNetworkException):
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content=ErrorResponse(
+                error=ErrorDetail(
+                    code="MODEL_UNAVAILABLE",
+                    message="Inference service could not be reached. Please check service configuration."
+                )
+            ).model_dump()
+        )
+    except ModelInferenceException:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content=ErrorResponse(
+                error=ErrorDetail(
+                    code="INFERENCE_FAILED",
+                    message="Model inference failed to produce a valid analysis."
+                )
+            ).model_dump()
+        )
+    except RuntimeError:
         return JSONResponse(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             content=ErrorResponse(

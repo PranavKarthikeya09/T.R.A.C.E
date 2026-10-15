@@ -7,12 +7,15 @@
 
 ## 1. Project Overview
 
-**T.R.A.C.E.** is a media-verification system designed to assess whether images (and conditionally videos) have been manipulated. It combines:
-1. **AI-based Manipulation Detection**: Leverages pretrained image-manipulation detection models.
-2. **Provenance & Integrity Verification**: Inspects media metadata and C2PA Content Credentials.
-3. **Evidence Presentation & Explainability**: Separates statistical AI inferences from cryptographic provenance.
-4. **T.R.A.C.E. ALERT**: Communicates uncertainty clearly without making unsupported claims of absolute certainty.
+**T.R.A.C.E.** is a media-verification prototype designed to assess whether images (and conditionally videos) may have been manipulated or synthesized. It combines:
+1. **AI-based Visual Manipulation Inspection**: Employs configurable vision foundation models (via Azure AI Foundry / Azure OpenAI) to inspect scenes for visual inconsistencies, lighting mismatches, and structural anomalies.
+2. **Provenance & Integrity Verification**: Inspects media metadata and C2PA Content Credentials where available.
+3. **Evidence Presentation & Explainability**: Separates qualitative visual inspection findings from cryptographic provenance.
+4. **T.R.A.C.E. ALERT**: Communicates uncertainty clearly without making unsupported claims of absolute authenticity or guilt.
 5. **User-Assisted Reporting**: Generates structured, reviewable evidence summaries for official channels (e.g., National Cyber Crime Reporting Portal).
+
+> [!IMPORTANT]
+> **Experimental Nature & Limitations:** The visual-analysis model is an experimental heuristic reasoning component. It does NOT calibrate pixel-level forensic probabilities, nor is it a definitive forensic detector. Absence of detected anomalies is not proof of authenticity; presence of visual artifacts may also arise from compression or optical phenomena.
 
 ---
 
@@ -33,14 +36,14 @@ Per the Technical Design Document ([TDD.md](file:///c:/Users/PRANAV%20KARTHIKEYA
 └──────────┬──────────┘
            ▼
 ┌─────────────────────┐
-│  Analysis Service   │
+│  Analysis Service   │ (Async Orchestration)
 └──────┬────────┬─────┘
        │        │
        ▼        ▼
 ┌────────────┐ ┌────────────────────┐
-│ AI Model   │ │ Provenance /        │
-│ Inference  │ │ Metadata Checks     │
-│ (MVP)      │ │ (conditional)       │
+│ Azure AI   │ │ Provenance /        │
+│ Vision     │ │ Metadata Checks     │
+│ Adapter    │ │ (conditional)       │
 └─────┬──────┘ └─────────┬──────────┘
       └──────────┬───────┘
                  ▼
@@ -70,7 +73,7 @@ T.R.A.C.E/
 │   └── showcase_slide.png    # Architecture and showcase slide
 ├── backend/                  # FastAPI Backend Service
 │   ├── .env.example          # Backend environment variables
-│   ├── requirements.txt      # Python dependencies
+│   ├── requirements.txt      # Python dependencies (lightweight, httpx, Pillow)
 │   ├── pyproject.toml        # Build configuration and pytest settings
 │   ├── app/
 │   │   ├── main.py           # Application entrypoint & CORS middleware
@@ -80,26 +83,29 @@ T.R.A.C.E/
 │   │   │       ├── router.py
 │   │   │       └── endpoints/
 │   │   │           ├── health.py   # GET /api/v1/health
-│   │   │           └── analyze.py  # POST /api/v1/analyze/image
+│   │   │           └── analyze.py  # POST /api/v1/analyze/image (async non-blocking)
 │   │   ├── schemas/          # Pydantic schemas (strictly aligned with API_SPEC.md)
 │   │   │   ├── health.py
 │   │   │   ├── analysis.py
 │   │   │   └── error.py
-│   │   ├── adapters/         # Decoupled Model Adapter boundary
-│   │   │   ├── base.py
-│   │   │   └── model_adapter.py
+│   │   ├── adapters/         # Decoupled Model Adapter boundaries
+│   │   │   ├── base.py                 # BaseInferenceAdapter (predict / predict_async)
+│   │   │   ├── azure_vision_adapter.py # Real Azure AI Foundry vision integration
+│   │   │   ├── model_adapter.py        # Adapter factory & fallback
+│   │   │   └── exceptions.py           # Sanitized domain exceptions
 │   │   ├── provenance/       # Provenance / C2PA adapter boundary
 │   │   │   └── provenance_adapter.py
 │   │   ├── composer/         # Result composition & T.R.A.C.E. alert logic
 │   │   │   └── result_composer.py
-│   │   ├── services/         # Orchestration service
+│   │   ├── services/         # Async orchestration service
 │   │   │   └── analysis_service.py
 │   │   └── utils/            # Image validation (Pillow decoding, size checks)
 │   │       └── media.py
 │   └── tests/                # Automated API test suite
 │       ├── conftest.py       # Test fixtures (FastAPI TestClient)
 │       ├── test_health.py    # Health check verification
-│       └── test_api_contract.py # Contract validation (400, 415, 422, 503)
+│       ├── test_api_contract.py # Contract validation (400, 415, 422, 503)
+│       └── test_azure_vision_adapter.py # Comprehensive Azure vision mock suite (16 tests)
 └── frontend/                 # Web Frontend (Vite + React + TypeScript)
     ├── package.json          # Node dependencies and scripts
     ├── tsconfig.json         # TypeScript configuration
@@ -110,7 +116,27 @@ T.R.A.C.E/
 
 ---
 
-## 4. Development Environment Setup
+## 4. Azure AI Foundry Vision Model Configuration
+
+The backend supports any vision-capable model deployment hosted on Microsoft Azure AI Foundry or Azure OpenAI (e.g., `gpt-4o`, `gpt-4o-mini`, `Phi-3.5-vision-instruct`, `Llama-3.2-11B-Vision`).
+
+### Required Environment Variables
+
+Set the following variables in your local `backend/.env` (copied from `backend/.env.example`):
+
+| Variable | Description | Example |
+|---|---|---|
+| `AZURE_AI_ENDPOINT` | The Azure endpoint base URL or full chat completions URL | `https://your-resource.openai.azure.com/` |
+| `AZURE_AI_API_KEY` | Your Azure API key | `your-secret-api-key` |
+| `AZURE_AI_DEPLOYMENT_NAME` | The deployment name configured in Azure AI Foundry | `gpt-4o` or `gpt-4o-mini` |
+| `AZURE_AI_API_VERSION` | REST API version supported by the deployment | `2024-08-01-preview` |
+| `AZURE_AI_REQUEST_TIMEOUT_SECONDS` | Network timeout for remote inference (default: 30s) | `30.0` |
+
+> **Privacy & Security Note:** Uploaded images are transmitted directly to your configured Azure deployment over encrypted TLS. Images are never transmitted to unapproved third parties. API keys and sensitive tokens are strictly masked and never logged or reflected in error responses.
+
+---
+
+## 5. Development Environment Setup
 
 ### Prerequisites
 
@@ -134,6 +160,9 @@ pip install -r requirements.txt
 # Create local environment configuration
 Copy-Item .env.example .env
 
+# Edit .env with your Azure AI Foundry deployment details:
+# notepad .env
+
 # Run automated tests
 pytest -v
 
@@ -147,60 +176,59 @@ The API will be available at:
 - **Interactive Swagger Docs**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 - **OpenAPI Schema**: [http://127.0.0.1:8000/openapi.json](http://127.0.0.1:8000/openapi.json)
 
-### 2. Frontend Setup
+### 2. Testing Image Analysis
 
+#### Via Swagger UI:
+1. Open [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
+2. Expand `POST /api/v1/analyze/image`.
+3. Click **Try it out**, upload a supported image (`.jpg`, `.png`, `.webp`), and click **Execute**.
+
+#### Via PowerShell / curl:
 ```powershell
-# Navigate to frontend directory
-cd frontend
-
-# Install dependencies
-npm install
-
-# Build / verify bundle
-npm run build
-
-# Start frontend development server
-npm run dev
+curl -X POST "http://127.0.0.1:8000/api/v1/analyze/image" `
+  -F "file=@path/to/sample.jpg" `
+  -F "include_provenance=false"
 ```
 
-The frontend will run at [http://localhost:5173/](http://localhost:5173/) and proxy `/api/*` calls directly to the FastAPI server at `http://127.0.0.1:8000`.
+If the Azure environment variables are not yet configured, the endpoint returns a clean `503 Service Unavailable` (`MODEL_UNAVAILABLE`), preventing any fabricated or mock results.
 
 ---
 
-## 5. API Contract Compliance
+## 6. Automated Testing
 
-The API strictly satisfies the contracts established in `API_SPEC.md`:
+The automated test suite runs completely offline without requiring live credentials:
 
-| Method | Endpoint | Status | Description |
-|---|---|---|---|
-| `GET` | `/api/v1/health` | 200 OK | Process health indicator (`{"status": "ok", "service": "trace-api"}`) |
-| `POST` | `/api/v1/analyze/image` | 200 / Errors | Multipart image analysis endpoint with rigorous validation |
+```powershell
+# From repository root:
+.\backend\.venv\Scripts\pytest -v
+```
 
-### Error Codes Implemented:
-- `400 Bad Request` (`MISSING_FILE`): File absent or empty
-- `413 Payload Too Large` (`FILE_TOO_LARGE`): File exceeds configured maximum size
-- `415 Unsupported Media Type` (`UNSUPPORTED_MEDIA_TYPE`): Non-whitelisted extension
-- `422 Unprocessable Content` (`INVALID_IMAGE`): Undecodable / corrupt image stream
-- `503 Service Unavailable` (`MODEL_UNAVAILABLE`): Returned when detector model is uninitialized (Phase 1 safeguard against fabricated outputs)
-- `500 Internal Server Error` (`INTERNAL_ERROR` / `INFERENCE_FAILED`): Sanitized error handling that prevents internal stack traces from leaking to clients
+The test suite covers:
+1. Azure request URL, header, and body payload construction.
+2. Image encoding, base64 data URI conversion, and dimension optimization.
+3. Structured output parsing and normalisation.
+4. Response mapping into `AnalysisResponse`, `AIDetectionResult`, and `TraceAlert`.
+5. Missing configuration handling (503 `MODEL_UNAVAILABLE`).
+6. Authentication failure handling (401/403) with secret redaction.
+7. Rate limiting (429) and upstream service errors (500/503).
+8. Network timeouts and transport errors.
+9. Malformed model response rejection without fake fallbacks.
+10. Full contract validation per `API_SPEC.md`.
 
 ---
 
-## 6. Implementation Phases
+## 7. Implementation Roadmap
 
-- [x] **Phase 1: Project Initialization and Environment Setup** (Current Phase)
-  - Environment inspection and runtime verification.
-  - Project directory structure established per `TDD.md`.
-  - Backend dependencies installed, schemas and API contract established per `API_SPEC.md`.
-  - Frontend toolchain scaffolded and verified.
-  - Automated test suite verifying contract rules.
-- [ ] **Phase 2: AI Model Selection and Inference Pipeline**
-  - Evaluate pretrained image manipulation detection model.
-  - Implement real inference adapter with documented preprocessing.
-  - Validate model outputs against authentic test samples.
-- [ ] **Phase 3: Integration and UI Development**
+- [x] **Phase 1: Project Initialization and Environment Setup**
+- [x] **Phase 2: Azure Vision Model Assessment & Plan**
+- [x] **Phase 3: Azure Vision Model Integration** (Current Phase)
+  - Configurable `AzureVisionAdapter` conforming to `BaseInferenceAdapter`.
+  - Non-blocking async inference pipeline in FastAPI.
+  - Safe error mapping (401, 403, 404, 429, 500, timeout) without leaking secrets.
+  - Comprehensive automated test suite (16 passing tests).
+- [ ] **Phase 4: Frontend Upload & Results Dashboard**
   - Interactive upload, preview, and results presentation.
   - Dynamic T.R.A.C.E. ALERT messaging and uncertainty communication.
-- [ ] **Phase 4: Provenance and Reporting (Conditional)**
+- [ ] **Phase 5: Provenance and Reporting (Conditional)**
   - C2PA / metadata inspection.
   - User-assisted evidence report generation.
