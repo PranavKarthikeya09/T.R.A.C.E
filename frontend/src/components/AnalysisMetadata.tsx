@@ -17,58 +17,44 @@ export const AnalysisMetadata: React.FC<AnalysisMetadataProps> = ({
   const formattedDate = new Date(createdAt).toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
 
   return (
-    <div className="forensic-card metadata-panel">
-      <div className="card-header-bar">
+    <div className="editorial-evidence-panel">
+      <div className="panel-header-row">
         <div>
-          <span className="card-eyebrow">AUDIT TRAIL</span>
-          <h3 className="card-title">Inspection Traceability</h3>
+          <span className="panel-eyebrow font-mono">AUDIT TRAIL</span>
+          <h3 className="panel-title">Inspection Traceability &amp; Score Semantics</h3>
         </div>
-        <span className="audit-hash-badge font-mono">SHA-REF: {analysisId.substring(0, 8)}</span>
+        <span className="panel-engine-stamp font-mono">ID: {analysisId.substring(0, 8)}</span>
       </div>
 
-      <div className="metadata-table-grid">
-        <div className="meta-grid-item">
-          <span className="meta-item-label">ANALYSIS ID</span>
-          <span className="meta-item-value font-mono selectable-text">{analysisId}</span>
-          <span className="meta-item-help">Unique audit session identifier</span>
+      <div className="editorial-table-grid font-mono">
+        <div className="grid-meta-cell">
+          <span className="meta-k">ANALYSIS SESSION ID</span>
+          <span className="meta-v selectable-text">{analysisId}</span>
+          <span className="meta-hint">Unique audit trail identifier</span>
         </div>
 
-        <div className="meta-grid-item">
-          <span className="meta-item-label">RECORDED TIMESTAMP</span>
-          <span className="meta-item-value font-mono">{formattedDate}</span>
-          <span className="meta-item-help">System receipt timestamp</span>
+        <div className="grid-meta-cell">
+          <span className="meta-k">RECORDED TIME (UTC)</span>
+          <span className="meta-v">{formattedDate}</span>
+          <span className="meta-hint">Server ingestion timestamp</span>
         </div>
 
-        <div className="meta-grid-item">
-          <span className="meta-item-label">CALIBRATED CONFIDENCE</span>
-          <span className="meta-item-value font-mono">
-            {detection.score !== null ? `${detection.score}` : 'None (Uncalibrated)'}
+        <div className="grid-meta-cell">
+          <span className="meta-k">REPORTED SCORE</span>
+          <span className="meta-v">
+              {detection.score !== null ? `${detection.score}` : 'Not provided'}
           </span>
-          <span className="meta-item-help">
-            {detection.score_semantics === 'not_applicable_qualitative_heuristic'
-              ? 'Qualitative visual inspection; no probabilistic score.'
-              : detection.score_semantics || 'Uncalibrated qualitative heuristic.'}
+          <span className="meta-hint">
+            {detection.score_semantics || 'No score semantics returned.'}
           </span>
         </div>
 
-        <div className="meta-grid-item">
-          <span className="meta-item-label">MEDIA SPECIFICATION</span>
-          <span className="meta-item-value font-mono text-truncate" title={media.filename}>
+        <div className="grid-meta-cell">
+          <span className="meta-k">CONTAINER SPECIFICATION</span>
+          <span className="meta-v text-truncate" title={media.filename}>
             {media.filename}
           </span>
-          <span className="meta-item-help">Type: {media.type.toUpperCase()}</span>
-        </div>
-
-        <div className="meta-grid-item">
-          <span className="meta-item-label">INFERENCE BACKBONE</span>
-          <span className="meta-item-value font-mono">{detection.model_id}</span>
-          <span className="meta-item-help">Platform: Azure AI Foundry Vision</span>
-        </div>
-
-        <div className="meta-grid-item">
-          <span className="meta-item-label">VERIFICATION INTEGRITY</span>
-          <span className="meta-item-value font-mono">STRICT_PARSED</span>
-          <span className="meta-item-help">Backend contract validated</span>
+          <span className="meta-hint">Media type: {media.type.toUpperCase()}</span>
         </div>
       </div>
     </div>

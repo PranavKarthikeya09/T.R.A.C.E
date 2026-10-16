@@ -54,6 +54,14 @@ class Settings(BaseSettings):
     ENABLE_PROVENANCE_CHECK: bool = False
     OFFICIAL_REPORTING_URL: str = "https://cybercrime.gov.in/"
 
+    # Sightengine External AI Detection Configuration
+    SIGHTENGINE_API_USER: Optional[str] = None
+    SIGHTENGINE_API_SECRET: Optional[str] = None
+    SIGHTENGINE_ENABLED: bool = True
+    SIGHTENGINE_GENAI_ENABLED: bool = True
+    SIGHTENGINE_DEEPFAKE_ENABLED: bool = False
+    SIGHTENGINE_REQUEST_TIMEOUT_SECONDS: float = 20.0
+
     model_config = SettingsConfigDict(
         env_file=(".env", "backend/.env", str(Path(__file__).resolve().parent.parent / ".env")),
         env_file_encoding="utf-8",

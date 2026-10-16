@@ -5,8 +5,8 @@ from app.config import settings
 
 class ProvenanceAdapter:
     """
-    Adapter handling C2PA/provenance and metadata checks.
-    Marked as conditional/unavailable until tooling is validated.
+    Adapter boundary for C2PA/provenance checks. Signature verification is not
+    implemented; enabled requests therefore report unavailable explicitly.
     """
 
     def __init__(self, enabled: bool = settings.ENABLE_PROVENANCE_CHECK):
@@ -14,13 +14,16 @@ class ProvenanceAdapter:
 
     def verify(self, file_path: str) -> Dict[str, Any]:
         """
-        Verify provenance credentials.
-        Returns explicit status (not_requested, unavailable, not_found, etc.)
+        Report whether the configured C2PA capability can run.
         """
         if not self.enabled:
             return {
-                "status": "not_requested",
-                "checks": []
+                "status": "disabled",
+                "checks": [{
+                    "name": "c2pa_manifest",
+                    "status": "disabled",
+                    "details": "C2PA inspection is disabled by server configuration."
+                }]
             }
 
         # If enabled but toolchain is not yet integrated
@@ -30,7 +33,7 @@ class ProvenanceAdapter:
                 {
                     "name": "c2pa_manifest",
                     "status": "unavailable",
-                    "details": "C2PA verification tooling is not configured in this environment."
+                "details": "C2PA manifest parsing and cryptographic signature verification are not implemented in this application."
                 }
             ]
         }

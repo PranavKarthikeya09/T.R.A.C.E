@@ -1,82 +1,31 @@
 :root {
-  /* ==========================================================================
-     T.R.A.C.E. Design Tokens — Phase 19: Distinctive Color Identity
-     Approved Palette: Warm Ivory, Paper White, Deep Burgundy, Muted Brass,
-     Ink Black, Warm Grey, Warm Neutral Borders, and Soft Parchment.
-     ========================================================================== */
-
-  /* Canvas and Primary Surfaces */
-  --bg-canvas: #f5f1e8;         /* Warm Ivory page background */
-  --bg-surface: #fffcf6;        /* Paper White main content surfaces */
-  --bg-inset: #eee8de;          /* Soft Parchment inset areas */
-  --bg-subtle: #eee8de;         /* Soft Parchment secondary panels */
-  --bg-surface-hover: #f9f5ed;  /* Interactive hover surface */
-
-  /* Borders (Warm Neutral) */
-  --border-subtle: #ded7cc;     /* Thin warm neutral border */
-  --border-medium: #cfc6b8;     /* Mid-tone warm border */
-  --border-strong: #9e9587;     /* High-contrast border */
-  --border-focus: #762d3d;      /* Deep burgundy keyboard focus outline */
-
-  /* Typography Colors */
-  --text-primary: #242326;      /* Ink Black primary text (14.2:1 contrast) */
-  --text-secondary: #706b67;    /* Warm Grey secondary text (4.95:1 contrast) */
-  --text-muted: #88827c;        /* Refined caption text */
-  --text-inverse: #ffffff;      /* High-contrast white for dark surfaces */
-
-  /* Primary Brand Accent — Deep Burgundy */
-  --burgundy: #762d3d;          /* Primary brand accent */
-  --burgundy-dark: #5c232f;     /* Burgundy active / hover state */
-  --burgundy-tint: #f8edf0;     /* Delicate burgundy background wash */
-  --burgundy-border: #e8cdd4;   /* Delicate burgundy perimeter border */
-
-  /* Secondary Accent — Muted Brass */
-  --brass: #b18a52;             /* Muted Brass decorative accent */
-  --brass-dark: #7d5b28;        /* Accessible darkened brass for text (6.2:1 contrast) */
-  --brass-tint: #f9f4ea;        /* Subtle brass background wash */
-  --brass-border: #e2d2bb;      /* Subtle brass perimeter border */
-
-  /* Semantic Status Colors (Separate from brand burgundy) */
-  /* 1. Caution (Muted Amber) */
-  --caution-bg: #fef8eb;
-  --caution-border: #d97706;
-  --caution-text: #854d0e;
-  --caution-tag-bg: #fef0c7;
-
-  /* 2. Notice / Authentic (Restrained Green) */
-  --notice-bg: #f2f9f3;
-  --notice-border: #16a34a;
-  --notice-text: #166534;
-  --notice-tag-bg: #dcfce7;
-
-  /* 3. Inconclusive (Neutral Slate / Muted Stone) */
-  --inconclusive-bg: #eee8de;
-  --inconclusive-border: #b5aca0;
-  --inconclusive-text: #3e3b38;
-  --inconclusive-tag-bg: #e2dbce;
-
-  /* 4. Error / Hazard (Deep Crimson) */
-  --error-bg: #fdf3f3;
-  --error-border: #dc2626;
-  --error-text: #991b1b;
-  --error-tag-bg: #fee2e2;
-
-  /* Typography */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-
-  /* Radii (Crisp, Disciplined) */
-  --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-
-  /* Restrained Soft Shadows */
-  --shadow-xs: 0 1px 2px rgba(36, 35, 38, 0.04);
-  --shadow-sm: 0 1px 3px rgba(36, 35, 38, 0.06), 0 1px 2px rgba(36, 35, 38, 0.03);
-  --shadow-md: 0 4px 6px -1px rgba(36, 35, 38, 0.06), 0 2px 4px -2px rgba(36, 35, 38, 0.03);
-
   color-scheme: light;
+  --paper: #F5F3ED;
+  --surface: #FFFEFA;
+  --mineral: #E9E7DF;
+  --ink: #191A18;
+  --graphite: #66665F;
+  --vermilion: #D74732;
+  --olive: #58634B;
+  --stone: #CECCC3;
+  --rule-dark: #929087;
+  --status-good: #58634B;
+  --status-warn: #9B4A32;
+  --status-neutral: #6D6C65;
+  --font-display: 'Space Grotesk', 'Arial Narrow', Arial, sans-serif;
+  --font-sans: 'Inter', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  --measure: 78rem;
+  --gutter: clamp(1.15rem, 4.2vw, 4.75rem);
+  --radius: 2px;
+
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background: var(--paper);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 *,
@@ -85,23 +34,43 @@
   box-sizing: border-box;
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--bg-canvas);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+html {
+  min-width: 320px;
+  scroll-behavior: smooth;
+  background: var(--paper);
 }
 
-#root {
+body {
+  min-width: 320px;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 15px/1.55 var(--font-sans);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
 }
 
 h1,
@@ -110,52 +79,33 @@ h3,
 h4,
 h5,
 h6 {
-  margin: 0;
-  color: var(--text-primary);
+  font-family: var(--font-display);
   font-weight: 600;
-  letter-spacing: -0.015em;
-}
-
-p {
-  margin: 0;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
 }
 
 a {
-  color: var(--burgundy);
-  text-decoration: none;
-  transition: color 0.12s ease;
+  color: inherit;
 }
 
-a:hover {
-  color: var(--burgundy-dark);
-  text-decoration: underline;
-}
-
-button {
-  font-family: inherit;
-  font-size: inherit;
-  cursor: pointer;
-}
-
-img {
-  max-width: 100%;
-  display: block;
-}
-
-/* Accessibility: Visible Focus Outlines */
 :focus-visible {
-  outline: 2px solid var(--border-focus);
-  outline-offset: 2px;
+  outline: 2px solid var(--vermilion);
+  outline-offset: 3px;
 }
 
-/* Accessibility: Respect Reduced Motion Preferences */
+::selection {
+  background: var(--vermilion);
+  color: var(--surface);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
+    scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 }

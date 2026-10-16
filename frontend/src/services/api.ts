@@ -26,8 +26,18 @@ export class ApiService {
       if (!response.ok) {
         throw new Error(`Health check returned status ${response.status}`);
       }
-      return await response.json();
-    } catch (err) {
+      const health: HealthResponse = await response.json();
+      try {
+        const capabilitiesResponse = await fetch(`${this.apiBase}/capabilities`);
+        if (capabilitiesResponse.ok) {
+          const payload: { capabilities?: Record<string, string> } = await capabilitiesResponse.json();
+          health.capabilities = payload.capabilities ?? {};
+        }
+      } catch {
+        // A capability catalog failure should not mark the health endpoint offline.
+      }
+      return health;
+    } catch {
       throw new Error('Unable to connect to T.R.A.C.E. API backend. Ensure the backend server is running.');
     }
   }
@@ -36,10 +46,14 @@ export class ApiService {
    * Submit an image for visual manipulation inspection.
    * Uses multipart/form-data with browser-generated boundary.
    */
-  static async analyzeImage(file: File, includeProvenance: boolean = false): Promise<AnalysisResponse> {
+  static async analyzeImage(file: File, selection: boolean | string[] = false): Promise<AnalysisResponse> {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('include_provenance', String(includeProvenance));
+    if (Array.isArray(selection)) {
+      formData.append('selected_checks', JSON.stringify(selection));
+    } else {
+      formData.append('include_provenance', String(selection));
+    }
 
     let response: Response;
     try {
@@ -48,7 +62,7 @@ export class ApiService {
         // Important: Do NOT manually set Content-Type header so browser attaches multipart boundary
         body: formData,
       });
-    } catch (networkErr) {
+    } catch {
       throw new Error('Network error: Could not connect to the analysis backend. Check connection or server status.');
     }
 
@@ -77,7 +91,7 @@ export class ApiService {
     try {
       const data: AnalysisResponse = await response.json();
       return data;
-    } catch (jsonErr) {
+    } catch {
       throw new Error('Invalid response structure received from the analysis backend.');
     }
   }

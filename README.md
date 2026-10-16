@@ -21,7 +21,7 @@
 
 ## 2. System Architecture
 
-Per the Technical Design Document ([TDD.md](file:///c:/Users/PRANAV%20KARTHIKEYA/OneDrive/Desktop/T.R.A.C.E/TDD.md)), the project strictly decouples interface, API routing, media validation, model inference, provenance checking, and report generation:
+Per the Technical Design Document ([TDD.md](TDD.md)), the project strictly decouples interface, API routing, media validation, model inference, provenance checking, and report generation:
 
 ```text
 ┌─────────────────────┐
@@ -60,62 +60,24 @@ Per the Technical Design Document ([TDD.md](file:///c:/Users/PRANAV%20KARTHIKEYA
 
 ## 3. Repository Structure
 
+The project separates the runtime application, automated tests, offline evaluation work, and documentation. See [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md) for the current directory map, request flow, and guidance on local-only files.
+
 ```text
 T.R.A.C.E/
-├── .env.example              # Root environment template
-├── .gitignore                # Git exclusions (venv, node_modules, secrets, cache)
-├── API_SPEC.md               # API Contract specification (Source of Truth)
-├── PRD.md                    # Product Requirements Document
-├── TDD.md                    # Technical Design Document
-├── README.md                 # Project guide and environment instructions
-├── pytest.ini                # Test runner configuration
-├── docs/                     # Project documentation assets
-│   └── showcase_slide.png    # Architecture and showcase slide
-├── backend/                  # FastAPI Backend Service
-│   ├── .env.example          # Backend environment variables
-│   ├── requirements.txt      # Python dependencies (lightweight, httpx, Pillow)
-│   ├── pyproject.toml        # Build configuration and pytest settings
-│   ├── app/
-│   │   ├── main.py           # Application entrypoint & CORS middleware
-│   │   ├── config.py         # Pydantic Settings & environment loader
-│   │   ├── api/              # API router and endpoints
-│   │   │   └── v1/
-│   │   │       ├── router.py
-│   │   │       └── endpoints/
-│   │   │           ├── health.py   # GET /api/v1/health
-│   │   │           └── analyze.py  # POST /api/v1/analyze/image (async non-blocking)
-│   │   ├── schemas/          # Pydantic schemas (strictly aligned with API_SPEC.md)
-│   │   │   ├── health.py
-│   │   │   ├── analysis.py
-│   │   │   └── error.py
-│   │   ├── adapters/         # Decoupled Model Adapter boundaries
-│   │   │   ├── base.py                 # BaseInferenceAdapter (predict / predict_async)
-│   │   │   ├── azure_vision_adapter.py # Real Azure AI Foundry vision integration
-│   │   │   ├── model_adapter.py        # Adapter factory & fallback
-│   │   │   └── exceptions.py           # Sanitized domain exceptions
-│   │   ├── provenance/       # Provenance / C2PA adapter boundary
-│   │   │   └── provenance_adapter.py
-│   │   ├── composer/         # Result composition & T.R.A.C.E. alert logic
-│   │   │   └── result_composer.py
-│   │   ├── services/         # Async orchestration service
-│   │   │   └── analysis_service.py
-│   │   └── utils/            # Image validation (Pillow decoding, size checks)
-│   │       └── media.py
-│   └── tests/                # Automated API test suite
-│       ├── conftest.py       # Test fixtures (FastAPI TestClient)
-│       ├── test_health.py    # Health check verification
-│       ├── test_api_contract.py # Contract validation (400, 415, 422, 503)
-│       └── test_azure_vision_adapter.py # Comprehensive Azure vision mock suite (16 tests)
-└── frontend/                 # Web Frontend (Vite + React + TypeScript)
-    ├── package.json          # Node dependencies and scripts
-    ├── tsconfig.json         # TypeScript configuration
-    ├── vite.config.ts        # Dev server proxy configuration (/api -> :8000)
-    ├── index.html            # Application entrypoint HTML
-    └── src/                  # React components & UI logic
+├── backend/app/       # FastAPI runtime: routes, schemas, services, adapters, forensics
+├── backend/tests/     # Backend automated tests and fixtures
+├── backend/evaluation/# Offline datasets, evaluation scripts, and audit material
+├── frontend/src/      # React UI, components, API client, and API types
+├── docs/              # Project documentation and visual assets
+├── API_SPEC.md        # Frontend/backend contract
+├── PRD.md             # Product requirements
+├── TDD.md             # Technical design
+└── README.md          # Setup and project overview
 ```
 
----
+Local virtual environments, secrets, dependency installs, build output, and evaluation artifacts are excluded by `.gitignore`; keep them out of source changes.
 
+---
 ## 4. Azure AI Foundry Vision Model Configuration
 
 The backend supports any vision-capable model deployment hosted on Microsoft Azure AI Foundry or Azure OpenAI (e.g., `gpt-4o`, `gpt-4o-mini`, `Phi-3.5-vision-instruct`, `Llama-3.2-11B-Vision`).

@@ -1,4 +1,5 @@
 """Image analysis endpoint."""
+import json
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
 from fastapi.responses import JSONResponse
 from app.schemas.analysis import AnalysisResponse
@@ -15,6 +16,7 @@ from app.services.analysis_service import AnalysisService
 
 router = APIRouter()
 analysis_service = AnalysisService()
+SUPPORTED_CHECKS = {"visual_assessment", "ai_generation", "deepfake", "metadata", "spatial_analysis", "provenance"}
 
 
 @router.post(
@@ -31,7 +33,8 @@ analysis_service = AnalysisService()
 )
 async def analyze_image(
     file: UploadFile = File(None),
-    include_provenance: bool = Form(default=False)
+    include_provenance: bool = Form(default=False),
+    selected_checks: str | None = Form(default=None),
 ):
     """
     Upload and analyze one image using the configured detection model.
@@ -85,12 +88,24 @@ async def analyze_image(
                     error=ErrorDetail(code="INVALID_REQUEST", message="Invalid upload request.")
                 ).model_dump()
             )
+    parsed_checks = None
+    if selected_checks is not None:
+        try:
+            parsed_checks = json.loads(selected_checks)
+        except (TypeError, json.JSONDecodeError):
+            raise HTTPException(status_code=422, detail="selected_checks must be a JSON array of supported check identifiers.")
+        if not isinstance(parsed_checks, list) or not parsed_checks or any(not isinstance(item, str) for item in parsed_checks):
+            raise HTTPException(status_code=422, detail="selected_checks must be a non-empty JSON array of check identifiers.")
+        if len(parsed_checks) != len(set(parsed_checks)) or set(parsed_checks) - SUPPORTED_CHECKS:
+            raise HTTPException(status_code=422, detail="selected_checks contains duplicate or unsupported check identifiers.")
 
     try:
         result = await analysis_service.analyze_image_async(
             filename=file.filename,
             image=pil_image,
-            include_provenance=include_provenance
+            include_provenance=include_provenance,
+            image_bytes=content,
+            selected_checks=parsed_checks
         )
         return result
     except ModelUnavailableException:

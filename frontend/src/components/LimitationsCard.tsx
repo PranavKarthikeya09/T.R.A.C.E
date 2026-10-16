@@ -6,32 +6,32 @@ interface LimitationsCardProps {
 
 export const LimitationsCard: React.FC<LimitationsCardProps> = ({ limitations }) => {
   return (
-    <div className="forensic-card limitations-panel">
-      <div className="card-header-bar">
+    <div className="editorial-evidence-panel">
+      <div className="panel-header-row">
         <div>
-          <span className="card-eyebrow">INTEGRITY SAFEGUARDS</span>
-          <h3 className="card-title">Methodological Boundaries</h3>
+          <span className="panel-eyebrow font-mono">INTEGRITY SAFEGUARDS</span>
+          <h3 className="panel-title">Methodological Boundaries</h3>
         </div>
       </div>
 
-      <div className="limitations-body">
-        <p className="limitations-intro">
-          Automated heuristic detections are subject to the following technical and legal constraints:
+      <div className="panel-inner-body">
+        <p className="limitations-lead">
+          Automated heuristic detections and forensic indicators are constrained by technical boundaries:
         </p>
 
-        <ul className="limitations-bullet-list">
+        <ul className="limitations-list">
           {limitations.map((item, idx) => (
-            <li key={idx} className="limitations-list-item">
-              <span className="limitations-marker" aria-hidden="true">—</span>
-              <span className="limitations-text-content">{item}</span>
+            <li key={idx} className="limitations-item">
+              <span className="limitations-bullet" aria-hidden="true">—</span>
+              <span className="limitations-text">{item}</span>
             </li>
           ))}
         </ul>
 
-        <div className="incident-reporting-callout">
-          <div className="callout-text-group">
-            <span className="callout-heading">INCIDENT REPORTING</span>
-            <p className="callout-desc">
+        <div className="incident-reporting-box">
+          <div className="reporting-copy">
+            <span className="reporting-eyebrow font-mono">INCIDENT REPORTING</span>
+            <p className="reporting-text">
               If this media is associated with extortion, impersonation, or financial fraud, submit evidence through authorized legal enforcement channels.
             </p>
           </div>
@@ -39,7 +39,7 @@ export const LimitationsCard: React.FC<LimitationsCardProps> = ({ limitations })
             href="https://cybercrime.gov.in/"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-secondary-compact font-mono"
+            className="btn btn-secondary-restrained font-mono"
           >
             cybercrime.gov.in ↗
           </a>

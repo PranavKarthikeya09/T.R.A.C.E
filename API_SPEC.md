@@ -33,6 +33,7 @@ This is a proposed contract, not evidence that the endpoints exist. Update the s
 | Method | Endpoint | Priority | Purpose |
 |---|---|---|---|
 | `GET` | `/api/v1/health` | MVP | Check whether the API process is available |
+| `GET` | `/api/v1/capabilities` | MVP | List supported check availability without exposing configuration values |
 | `POST` | `/api/v1/analyze/image` | MVP | Upload and analyze one image |
 | `GET` | `/api/v1/analysis/{analysis_id}` | Optional | Retrieve a result during an in-memory analysis lifecycle, if needed |
 | `POST` | `/api/v1/analysis/{analysis_id}/report` | Optional | Generate an evidence report from an analysis |
@@ -57,6 +58,10 @@ The MVP can return the analysis result directly from `POST /analyze/image`; it d
 
 If model readiness needs to be checked separately, add an explicit readiness field or endpoint only after defining how model loading is managed. Do not report model readiness as true without checking it.
 
+### `GET /api/v1/capabilities`
+
+Returns check identifiers with a status such as `available`, `not_configured`, `disabled`, or `unavailable`. The response contains no credential values. This catalog describes server configuration and implementation readiness; it does not guarantee a provider request will succeed.
+
 ## 4. Analyze Image
 
 ### `POST /api/v1/analyze/image`
@@ -69,6 +74,9 @@ If model readiness needs to be checked separately, add an explicit readiness fie
 |---|---|---|---|
 | `file` | File | Yes | Image file to analyze |
 | `include_provenance` | Boolean/string form field | No | Request provenance checks if supported; default `false` |
+| `selected_checks` | JSON array encoded as a string | No | Explicit check identifiers: `visual_assessment`, `ai_generation`, `deepfake`, `metadata`, `spatial_analysis`, `provenance`; omit to retain legacy execution behavior |
+
+When `selected_checks` is supplied, only the listed checks are requested. The server validates identifiers independently of the frontend. The additive `investigation_scope` response field records `selected_checks` and a `check_statuses` map. Check statuses include `completed`, `failed`, `unavailable`, `not_configured`, `disabled`, and `not_requested`. A selected request with incomplete check outcomes may return analysis `status: "partial"`; requests omitting `selected_checks` retain the legacy response behavior.
 
 ### Validation requirements
 
@@ -104,6 +112,17 @@ The following is an illustrative response shape. Field values are placeholders f
     "status": "not_requested",
     "checks": []
   },
+  "investigation_scope": {
+    "selected_checks": ["metadata", "spatial_analysis"],
+    "check_statuses": {
+      "visual_assessment": "not_requested",
+      "ai_generation": "not_requested",
+      "deepfake": "not_requested",
+      "metadata": "completed",
+      "spatial_analysis": "completed",
+      "provenance": "not_requested"
+    }
+  },
   "trace_alert": {
     "level": "caution",
     "message": "Review the findings and verify the original source before trusting or sharing this media."
@@ -128,9 +147,10 @@ The following is an illustrative response shape. Field values are placeholders f
 
 **Analysis `status`:**
 - `completed`
+- `partial` — a requested selection finished but one or more selected checks were unavailable or failed
 - `failed`
 
-Do not return `completed` if model inference did not finish.
+For explicit `selected_checks` requests, preserve successful independent results and use `partial` when one or more selected checks do not complete. Legacy requests retain their established response behavior.
 
 **AI detection `status`:**
 - `completed`
@@ -139,11 +159,14 @@ Do not return `completed` if model inference did not finish.
 
 **Provenance `status`:**
 - `not_requested`
+- `disabled`
 - `verified`
 - `invalid`
 - `not_found`
 - `inconclusive`
 - `unavailable`
+
+This implementation currently has no C2PA manifest parser or cryptographic signature verifier. A requested provenance check therefore reports `disabled` when the server toggle is off and `unavailable` when enabled; it must not claim a verified, invalid, or absent manifest.
 
 Only expose states the chosen verifier can meaningfully distinguish. If multiple credential checks are performed, a top-level summary may be accompanied by per-check results.
 
